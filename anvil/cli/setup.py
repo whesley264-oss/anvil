@@ -92,21 +92,65 @@ def run_termux_setup():
     else:
         print_info("Android SDK not found. Installing...")
         
-        print_info("Note: Installing Android SDK in Termux requires significant storage.")
-        print_info("Alternative: You can download command-line tools manually.")
+        print_info("Downloading Android command-line tools (~150MB)...")
         
-        response = input("Install Android SDK now? [y/N]: ").strip().lower()
+        # Download command-line tools
+        sdk_dir = Path.home() / "android-sdk"
+        sdk_dir.mkdir(exist_ok=True)
         
-        if response in ['y', 'yes']:
-            # Try to install android-sdk package
-            result = subprocess.run(["pkg", "install", "-y", "android-sdk"], capture_output=True, text=True)
+        cmdline_tools_url = "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+        
+        try:
+            import urllib.request
+            import zipfile
             
-            if result.returncode == 0:
-                print_success("Android SDK installed!")
-                sdk_path = "/data/data/com.termux/files/usr/lib/android-sdk"
-            else:
-                print_warning("Android SDK package failed. Consider manual installation.")
-                print_info("Download from: https://developer.android.com/studio#command-line-tools")
+            zip_path = sdk_dir / "cmdline-tools.zip"
+            
+            # Download with progress
+            def progress(count, block_size, total_size):
+                if total_size > 0:
+                    percent = int(count * block_size * 100 / total_size)
+                    if percent % 10 == 0:
+                        print(f"\r{Colors.CYAN}   Downloading: {percent}%{Colors.END}", end="", flush=True)
+            
+            urllib.request.urlretrieve(cmdline_tools_url, zip_path, reporthook=progress)
+            print()
+            print_success("Download complete!")
+            
+            # Extract
+            print_info("Extracting...")
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(sdk_dir)
+            
+            # Organize structure
+            cmdline_tools = sdk_dir / "cmdline-tools"
+            latest = cmdline_tools / "latest"
+            latest.mkdir(parents=True, exist_ok=True)
+            
+            extracted_tools = cmdline_tools / "cmdline-tools"
+            if extracted_tools.exists():
+                import shutil
+                for item in extracted_tools.glob("*"):
+                    shutil.move(str(item), str(latest / item.name))
+                shutil.rmtree(extracted_tools)
+            
+            zip_path.unlink()
+            print_success("Android SDK installed!")
+            sdk_path = str(sdk_dir)
+            
+            # Accept licenses
+            sdkmanager = latest / "bin" / "sdkmanager"
+            if sdkmanager.exists():
+                print_info("Accepting licenses...")
+                subprocess.run([str(sdkmanager), "--licenses"], input=b"y\ny\ny\ny\ny\ny\ny\n", cwd=sdk_dir)
+                
+                print_info("Installing basic packages (platform-tools, android-34, build-tools)...")
+                subprocess.run([str(sdkmanager), "platform-tools", "platforms;android-34", "build-tools;34.0.0"], cwd=sdk_dir)
+                print_success("Basic packages installed!")
+                
+        except Exception as e:
+            print_warning(f"SDK download failed: {e}")
+            print_info("You can run 'anvil setup --install-sdk' later")
     
     # Step 4: Setup environment variables
     print_step("4", "Setting up environment variables...")
@@ -115,12 +159,25 @@ def run_termux_setup():
     termux_bashrc = Path.home() / ".bashrc"
     termux_profile = Path.home() / ".profile"
     
+    # Find Java path
+    java_home_path = "$PREFIX/lib/jvm/java-17-openjdk"
+    if not Path(os.path.expandvars(java_home_path)).exists():
+        # Try alternative paths
+        for jpath in ["$PREFIX/lib/jvm/java-17", "$PREFIX/opt/openjdk"]:
+            if Path(os.path.expandvars(jpath)).exists():
+                java_home_path = jpath
+                break
+    
+    # Use the downloaded SDK path or default
+    android_home_path = sdk_path or "$HOME/android-sdk"
+    
     env_lines = [
         "",
         "# ANVIL Environment Variables",
-        f"export ANDROID_HOME={sdk_path or '$PREFIX/lib/android-sdk'}",
-        "export JAVA_HOME=$PREFIX/lib/jvm/java-17-openjdk",
-        "export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools",
+        f"export ANDROID_HOME={android_home_path}",
+        f"export ANDROID_SDK_ROOT={android_home_path}",
+        f"export JAVA_HOME={java_home_path}",
+        f"export PATH=$PATH:$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools",
         "",
     ]
     
@@ -207,39 +264,92 @@ def install_sdk():
     
     try:
         import urllib.request
+        import zipfile
         
         print_info(f"Downloading from: {cmdline_tools_url}")
         zip_path = sdk_dir / "cmdline-tools.zip"
         
-        urllib.request.urlretrieve(cmdline_tools_url, zip_path)
+        # Download with progress
+        def progress(count, block_size, total_size):
+            if total_size > 0:
+                percent = int(count * block_size * 100 / total_size)
+                if percent % 10 == 0:
+                    print(f"\r{Colors.CYAN}ℹ Progress: {percent}%{Colors.END}", end="", flush=True)
+        
+        urllib.request.urlretrieve(cmdline_tools_url, zip_path, reporthook=progress)
+        print()  # New line after progress
         
         print_success("Download complete!")
         
         # Extract
         print_info("Extracting...")
-        import zipfile
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(sdk_dir)
         
-        # Organize structure
+        # Organize structure: cmdline-tools/latest/bin
         cmdline_tools = sdk_dir / "cmdline-tools"
-        latest = cmdline_tools / "latest"
-        latest.mkdir(exist_ok=True)
         
-        # Move contents
-        for item in (cmdline_tools / "cmdline-tools").glob("*"):
-            if item.name != "latest":
-                pass
+        # Remove any existing latest folder
+        latest = cmdline_tools / "latest"
+        if latest.exists():
+            import shutil
+            shutil.rmtree(latest)
+        
+        # Create latest directory
+        latest.mkdir(parents=True, exist_ok=True)
+        
+        # Move contents from the extracted cmdline-tools folder
+        extracted_tools = cmdline_tools / "cmdline-tools"
+        if extracted_tools.exists():
+            import shutil
+            for item in extracted_tools.glob("*"):
+                shutil.move(str(item), str(latest / item.name))
+            shutil.rmtree(extracted_tools)
         
         # Cleanup
         zip_path.unlink()
         
         print_success(f"Android SDK installed to: {sdk_dir}")
         
-        # Update environment
-        print_info("\nAdd these to your ~/.bashrc:")
-        print(f"  export ANDROID_HOME={sdk_dir}")
-        print(f"  export PATH=$PATH:{sdk_dir}/cmdline-tools/latest/bin")
+        # Set environment variables for this session
+        os.environ["ANDROID_HOME"] = str(sdk_dir)
+        os.environ["ANDROID_SDK_ROOT"] = str(sdk_dir)
+        
+        # Add to shell config
+        shell_rc = Path.home() / ".bashrc"
+        if Path.home() / ".zshrc":
+            shell_rc = Path.home() / ".zshrc"
+        
+        env_lines = [
+            "",
+            "# Android SDK for ANVIL",
+            f"export ANDROID_HOME={sdk_dir}",
+            f"export ANDROID_SDK_ROOT={sdk_dir}",
+            f"export PATH=$PATH:{sdk_dir}/cmdline-tools/latest/bin:{sdk_dir}/platform-tools",
+        ]
+        
+        with open(shell_rc, 'a') as f:
+            for line in env_lines:
+                f.write(line + "\n")
+        
+        print_success("Environment variables configured!")
+        print_info(f"Added to {shell_rc}")
+        
+        # Try to accept licenses
+        sdkmanager = latest / "bin" / "sdkmanager"
+        if sdkmanager.exists():
+            print_info("Accepting Android SDK licenses...")
+            subprocess.run([str(sdkmanager), "--licenses"], input=b"y\ny\ny\ny\ny\ny\ny\n", cwd=sdk_dir)
+            print_success("Licenses accepted!")
+            
+            # Install basic packages
+            print_info("Installing basic SDK packages...")
+            subprocess.run([str(sdkmanager), "platform-tools", "platforms;android-34", "build-tools;34.0.0"], cwd=sdk_dir)
+            print_success("Basic packages installed!")
+        
+        print(f"\n{Colors.BOLD}SDK Installation Complete!{Colors.END}")
+        print(f"  ANDROID_HOME={sdk_dir}")
+        print(f"\nRun 'source {shell_rc}' to reload environment")
         
     except Exception as e:
         print_error(f"Failed to install SDK: {e}")
