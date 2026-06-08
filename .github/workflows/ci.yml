@@ -173,16 +173,6 @@ jobs:
           cp -r ${{ github.workspace }}/demo-app anvil-test-project
           cd anvil-test-project
           
-          # Build the React app first
-          npm install
-          npm run build
-          
-          # Move dist content to root so anvil can find index.html
-          if [ -d "dist" ]; then
-            cp -r dist/* .
-            rm -rf dist
-          fi
-          
           echo "Project created!"
           ls -la
 

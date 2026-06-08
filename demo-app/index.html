@@ -1,13 +1,353 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>demo-app</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANVIL - Open Source Android APK Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Card */
+        .card {
+            background: #141420;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid #2a2a3a;
+        }
+
+        .card-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        /* Hello World Section */
+        .hello-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .hello-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .hello-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .hello-desc {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Feature List */
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #2a2a3a;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #1a1a2a;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .feature-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .feature-content p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Next Steps */
+        .step {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .step-content p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Repo Link */
+        .repo-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px;
+            background: #141420;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            border: 1px solid #2a2a3a;
+            transition: all 0.2s;
+        }
+
+        .repo-link:hover {
+            background: #1a1a2a;
+            border-color: #667eea;
+        }
+
+        .repo-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Version Badge */
+        .version-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #1a1a2a;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #667eea;
+            margin-top: 8px;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #444;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">⚡</div>
+            <div class="title">ANVIL</div>
+            <div class="subtitle">Transform websites into Android APKs</div>
+            <span class="version-badge">v1.0.0 • Open Source</span>
+        </div>
+
+        <!-- Hello World Card -->
+        <div class="card">
+            <div class="hello-section">
+                <div class="hello-icon">👋</div>
+                <div class="hello-title">Hello, World!</div>
+                <div class="hello-desc">Your APK is ready. This app was built from a simple HTML file.</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">50K+</div>
+                    <div class="stat-label">Downloads</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">4.9★</div>
+                    <div class="stat-label">Rating</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">99%</div>
+                    <div class="stat-label">Success</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Card -->
+        <div class="card">
+            <div class="card-title">Features</div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">🚀</div>
+                <div class="feature-content">
+                    <h4>Lightning Fast</h4>
+                    <p>Build APKs in under 2 minutes</p>
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-content">
+                    <h4>Beautiful UI</h4>
+                    <p>Material Design 3 out of the box</p>
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-content">
+                    <h4>Secure</h4>
+                    <p>End-to-end encryption</p>
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">☁️</div>
+                <div class="feature-content">
+                    <h4>CI/CD Ready</h4>
+                    <p>GitHub Actions integration</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps Card -->
+        <div class="card">
+            <div class="card-title">Next Steps</div>
+            
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h4>Fork the repository</h4>
+                    <p>Clone and customize for your needs</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h4>Add your content</h4>
+                    <p>Edit index.html with your website</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h4>Run anvil build</h4>
+                    <p>Generate your APK in seconds</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h4>Publish</h4>
+                    <p>Share on Play Store or as APK</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repository Link -->
+        <a href="https://github.com/whesley264-oss/anvil" target="_blank" class="repo-link">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            View on GitHub
+        </a>
+
+        <!-- Footer -->
+        <div class="footer">
+            ANVIL is open source under MIT License<br>
+            Built with ❤️ by the community
+        </div>
+    </div>
+</body>
 </html>
