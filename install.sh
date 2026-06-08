@@ -1,11 +1,30 @@
 #!/bin/bash
-# ANVIL Installer v1.4
+# ANVIL Installer v1.5 - Modular Installation
 # Usage: curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash
+# Or with mode: curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash -s -- --mode light
 
 set -e
 
 INSTALL_DIR="$HOME/.anvil"
 REPO_URL="https://github.com/whesley264-oss/anvil.git"
+MODE="normal"
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --mode)
+            MODE="$2"
+            shift 2
+            ;;
+        --mode=*)
+            MODE="${1#*=}"
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
 
 # Colors
 GREEN='\033[0;32m'
@@ -17,9 +36,11 @@ NC='\033[0m'
 
 echo -e "${BOLD}"
 echo "╔══════════════════════════════════════════╗"
-echo "║         ANVIL Installer v1.4              ║"
+echo "║         ANVIL Installer v1.5              ║"
 echo "╚══════════════════════════════════════════╝"
 echo -e "${NC}"
+echo -e "${CYAN}ℹ Installation mode: ${MODE}${NC}"
+echo ""
 
 # Detect platform
 PLATFORM="unknown"
@@ -54,12 +75,8 @@ echo -e "${CYAN}ℹ Downloading ANVIL...${NC}"
 if [ -d "$INSTALL_DIR/.git" ]; then
     echo -e "${CYAN}ℹ Updating existing installation...${NC}"
     cd "$INSTALL_DIR"
-    
-    # Configure git to handle divergent branches
     git config pull.rebase false
     git config fetch.prune true
-    
-    # Handle local changes - reset hard to get clean state
     git reset --hard HEAD
     git clean -fd
     git fetch --all
@@ -68,60 +85,97 @@ else
     git clone "$REPO_URL" "$INSTALL_DIR"
 fi
 
-# Check if clone was successful
 if [ ! -f "$INSTALL_DIR/anvil_cli.py" ]; then
     echo -e "${RED}✗ Download failed${NC}"
     exit 1
 fi
 
-# Make executable
 chmod +x "$INSTALL_DIR/anvil_cli.py"
 
-# Install Python deps WITHOUT console scripts (to prevent overwrite)
-echo -e "${CYAN}ℹ Installing Python dependencies...${NC}"
-cd "$INSTALL_DIR"
+# Install based on mode
+case $MODE in
+    light)
+        echo -e "${CYAN}ℹ Installing ANVIL Light (~10MB)${NC}"
+        pip install -e . --no-console-scripts 2>/dev/null || \
+        pip3 install -e . --no-console-scripts 2>/dev/null || \
+        pip install . 2>/dev/null || \
+        pip3 install . 2>/dev/null || true
+        echo -e "${GREEN}✓ ANVIL Light installed!${NC}"
+        ;;
+    
+    normal)
+        echo -e "${CYAN}ℹ Installing ANVIL Normal (~50MB)${NC}"
+        pip install -e . --no-console-scripts 2>/dev/null || \
+        pip3 install -e . --no-console-scripts 2>/dev/null || \
+        pip install . 2>/dev/null || \
+        pip3 install . 2>/dev/null || true
+        echo -e "${GREEN}✓ ANVIL Normal installed!${NC}"
+        ;;
+    
+    full)
+        echo -e "${CYAN}ℹ Installing ANVIL Full (~2GB)${NC}"
+        pip install -e . --no-console-scripts 2>/dev/null || \
+        pip3 install -e . --no-console-scripts 2>/dev/null || \
+        pip install . 2>/dev/null || \
+        pip3 install . 2>/dev/null || true
+        
+        # Install Android SDK for full mode
+        if [ "$PLATFORM" = "termux" ]; then
+            echo -e "${CYAN}ℹ Installing Android SDK...${NC}"
+            SDK_DIR="$HOME/android-sdk"
+            mkdir -p "$SDK_DIR"
+            
+            CMDLINE_URL="https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+            echo -e "${CYAN}ℹ Downloading Android command-line tools...${NC}"
+            
+            cd "$SDK_DIR"
+            curl -L -o cmdline-tools.zip "$CMDLINE_URL"
+            unzip -q cmdline-tools.zip
+            rm cmdline-tools.zip
+            
+            mkdir -p cmdline-tools/latest
+            mv cmdline-tools/bin cmdline-tools/latest/ 2>/dev/null || true
+            mv cmdline-tools/lib cmdline-tools/latest/ 2>/dev/null || true
+            
+            yes | "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
+            "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-34" "build-tools;34.0.0" 2>/dev/null || true
+            
+            echo -e "${GREEN}✓ Android SDK installed!${NC}"
+        fi
+        ;;
+    
+    *)
+        echo -e "${YELLOW}⚠ Unknown mode: $MODE, using normal${NC}"
+        pip install -e . --no-console-scripts 2>/dev/null || true
+        ;;
+esac
 
-# Install without creating console scripts that would overwrite our launcher
-pip install -e . --no-console-scripts 2>/dev/null || \
-pip3 install -e . --no-console-scripts 2>/dev/null || \
-pip install -e . --skip-scripts 2>/dev/null || \
-pip3 install -e . --skip-scripts 2>/dev/null || \
-pip install . 2>/dev/null || \
-pip3 install . 2>/dev/null || \
-true
-
-# Create wrapper script (solves module import issues)
+# Create launcher
 echo -e "${CYAN}ℹ Creating launcher...${NC}"
-
-# Remove old file/symlink if exists
 rm -f "$BIN_DIR/anvil" 2>/dev/null || true
 
-# Create a bash launcher script
 cat > "$BIN_DIR/anvil" << 'LAUNCHER'
 #!/bin/bash
-# ANVIL Launcher - Sets up Python path correctly
 export ANVIL_HOME="$HOME/.anvil"
 export PYTHONPATH="$ANVIL_HOME:$PYTHONPATH"
+
+if [ -d "$PREFIX/lib/jvm/java-17-openjdk" ]; then
+    export JAVA_HOME="$PREFIX/lib/jvm/java-17-openjdk"
+    export PATH="$JAVA_HOME/bin:$PATH"
+fi
+
+if [ -d "$HOME/android-sdk" ]; then
+    export ANDROID_HOME="$HOME/android-sdk"
+    export ANDROID_SDK_ROOT="$HOME/android-sdk"
+    export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
+fi
+
 exec python3 "$ANVIL_HOME/anvil_cli.py" "$@"
 LAUNCHER
 
 chmod +x "$BIN_DIR/anvil"
 
-# Verify launcher
-if [ -f "$BIN_DIR/anvil" ]; then
-    echo -e "${GREEN}✓ Launcher created: $BIN_DIR/anvil${NC}"
-else
-    echo -e "${RED}✗ Failed to create launcher${NC}"
-    exit 1
-fi
-
-# Verify installation - silent check
-echo ""
-echo -e "${CYAN}ℹ Verifying installation...${NC}"
-
-# Test the launcher directly (silent)
 VERSION=$(python3 "$INSTALL_DIR/anvil_cli.py" --version 2>&1 | grep -oP '[\d.]+' | head -1 || echo "unknown")
-
 if [ "$VERSION" != "unknown" ]; then
     echo -e "${GREEN}✓ ANVIL installed successfully!${NC}"
     echo -e "${BOLD}Version: ${VERSION}${NC}"
@@ -129,7 +183,6 @@ else
     echo -e "${YELLOW}⚠ ANVIL installed but version check failed${NC}"
 fi
 
-# Auto-add PATH to shell config
 SHELL_RC=""
 if [ -f "$HOME/.zshrc" ]; then
     SHELL_RC="$HOME/.zshrc"
@@ -142,43 +195,22 @@ if [ -n "$SHELL_RC" ]; then
         echo "" >> "$SHELL_RC"
         echo "# ANVIL" >> "$SHELL_RC"
         echo "export PATH=\"$BIN_DIR:\$PATH\"" >> "$SHELL_RC"
-        echo -e "${CYAN}ℹ Added PATH to $SHELL_RC${NC}"
     fi
 fi
 
-# Set JAVA_HOME for Termux (needed for Android builds)
-if [ "$PLATFORM" = "termux" ]; then
-    JAVA_PATH=$(ls -d $PREFIX/lib/jvm/java-17* 2>/dev/null | head -1 || ls -d $PREFIX/opt/openjdk* 2>/dev/null | head -1 || echo "")
-    if [ -n "$JAVA_PATH" ]; then
-        if [ -n "$SHELL_RC" ]; then
-            if ! grep -q "JAVA_HOME" "$SHELL_RC"; then
-                echo "" >> "$SHELL_RC"
-                echo "# JAVA_HOME for ANVIL" >> "$SHELL_RC"
-                echo "export JAVA_HOME=\"$JAVA_PATH\"" >> "$SHELL_RC"
-                echo "export PATH=\"\$JAVA_HOME/bin:\$PATH\"" >> "$SHELL_RC"
-                echo -e "${CYAN}ℹ Added JAVA_HOME to $SHELL_RC${NC}"
-            fi
-        fi
-        # Also set for current session
-        export JAVA_HOME="$JAVA_PATH"
-        export PATH="$JAVA_HOME/bin:$PATH"
-        echo -e "${CYAN}ℹ JAVA_HOME set to: $JAVA_PATH${NC}"
-    fi
-fi
-
+echo ""
+echo -e "${BOLD}Installation modes:${NC}"
+echo "  --mode light   - Minimal (~10MB)"
+echo "  --mode normal  - Standard (~50MB)"  
+echo "  --mode full    - Complete (~2GB)"
 echo ""
 echo -e "${BOLD}Next steps:${NC}"
-echo ""
-echo "  1. Run: ${CYAN}zsh${NC}   (only on Termux - switches to ZSH shell)"
-echo "  2. Run: ${CYAN}anvil --help${NC}   (show all commands)"
-echo "  3. Run: ${CYAN}anvil init${NC}      (create new project)"
-echo ""
-echo -e "${YELLOW}⚠ On Termux: you MUST use ZSH shell!${NC}"
-echo -e "${YELLOW}   Type 'zsh' and press Enter to switch${NC}"
+echo "  1. Run: ${CYAN}zsh${NC}   (only on Termux)"
+echo "  2. Run: ${CYAN}anvil --help${NC}   (show commands)"
+echo "  3. Run: ${CYAN}anvil init${NC}      (create project)"
 echo ""
 echo -e "${CYAN}Quick commands:${NC}"
 echo "  anvil lang --set pt    - Change to Portuguese"
 echo "  anvil doctor           - Check system"
-echo "  anvil inspect <url>     - Analyze website"
-echo "  anvil run              - Start dev server"
-echo ""
+echo "  anvil light            - Use lightweight build"
+echo "  anvil quick-build      - Fast APK build"

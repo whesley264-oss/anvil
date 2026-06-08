@@ -50,7 +50,7 @@ Run 'anvil <command> --help' for more information on a command.
     # Import and add all command parsers
     from anvil.cli import (
         init, build, sign, doctor, preview, config, plugin, deploy, setup, 
-        quick_build, lang, run, logs, clean, inspect, update, demo
+        quick_build, lang, run, logs, clean, inspect, update, demo, pack
     )
     
     init.add_parser(subparsers)
@@ -63,6 +63,7 @@ Run 'anvil <command> --help' for more information on a command.
     deploy.add_parser(subparsers)
     setup.add_parser(subparsers)
     quick_build.add_parser(subparsers)
+    pack.add_parser(subparsers)
     lang.add_parser(subparsers)
     run.add_parser(subparsers)
     logs.add_parser(subparsers)
@@ -104,6 +105,7 @@ Run 'anvil <command> --help' for more information on a command.
         print()
         print("\033[1mQuick Build:\033[0m")
         print("  quick-build   Build APK from GitHub, ZIP, or URL")
+        print("  pack          Lightweight build (no SDK required)")
         print()
         print("Run '\033[94manvil <command> --help\033[0m' for more information.")
         print()
@@ -121,6 +123,7 @@ Run 'anvil <command> --help' for more information on a command.
         "deploy": deploy.run,
         "setup": setup.run,
         "quick-build": quick_build.run,
+        "pack": pack.run,
         "lang": lang.run,
         "run": run.run,
         "logs": logs.run,
