@@ -73,6 +73,10 @@ Run 'anvil <command> --help' for more information on a command.
     
     from anvil.cli.banner import BANNER, BANNER_SMALL
     
+    # Handle "anvil help" as alias for "anvil --help"
+    if len(sys.argv) > 1 and sys.argv[1] == "help":
+        sys.argv[1] = "--help"
+    
     args = parser.parse_args()
     
     if not args.command:

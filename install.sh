@@ -146,6 +146,26 @@ if [ -n "$SHELL_RC" ]; then
     fi
 fi
 
+# Set JAVA_HOME for Termux (needed for Android builds)
+if [ "$PLATFORM" = "termux" ]; then
+    JAVA_PATH=$(ls -d $PREFIX/lib/jvm/java-17* 2>/dev/null | head -1 || ls -d $PREFIX/opt/openjdk* 2>/dev/null | head -1 || echo "")
+    if [ -n "$JAVA_PATH" ]; then
+        if [ -n "$SHELL_RC" ]; then
+            if ! grep -q "JAVA_HOME" "$SHELL_RC"; then
+                echo "" >> "$SHELL_RC"
+                echo "# JAVA_HOME for ANVIL" >> "$SHELL_RC"
+                echo "export JAVA_HOME=\"$JAVA_PATH\"" >> "$SHELL_RC"
+                echo "export PATH=\"\$JAVA_HOME/bin:\$PATH\"" >> "$SHELL_RC"
+                echo -e "${CYAN}ℹ Added JAVA_HOME to $SHELL_RC${NC}"
+            fi
+        fi
+        # Also set for current session
+        export JAVA_HOME="$JAVA_PATH"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        echo -e "${CYAN}ℹ JAVA_HOME set to: $JAVA_PATH${NC}"
+    fi
+fi
+
 echo ""
 echo -e "${BOLD}Next steps:${NC}"
 echo ""
