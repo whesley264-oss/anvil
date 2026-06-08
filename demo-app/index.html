@@ -1,138 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANVIL - Transform websites into Android APKs</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #e0e0e0; line-height: 1.6; min-height: 100vh; }
-        .container { max-width: 480px; margin: 0 auto; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
-        .logo-section { text-align: left; }
-        .app-name { font-size: 28px; font-weight: 800; letter-spacing: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .app-tagline { color: #666; font-size: 12px; }
-        .lang-selector { position: relative; }
-        .lang-btn { background: #141420; border: 1px solid #2a2a3a; border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .lang-btn:hover { background: #1a1a2a; border-color: #667eea; }
-        .lang-dropdown { position: absolute; top: 100%; right: 0; margin-top: 4px; background: #141420; border: 1px solid #2a2a3a; border-radius: 8px; overflow: hidden; display: none; z-index: 100; min-width: 140px; }
-        .lang-dropdown.active { display: block; }
-        .lang-option { padding: 10px 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; }
-        .lang-option:hover { background: #1a1a2a; }
-        .lang-option.active { background: #2a2a4a; color: #667eea; }
-        .logo-section-full { text-align: center; padding: 10px 0 20px; }
-        .logo { width: 100px; height: 100px; margin: 0 auto 20px; }
-        .card { background: #141420; border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 1px solid #2a2a3a; }
-        .card-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 16px; }
-        .hello-section { text-align: center; padding: 30px 0; }
-        .hello-icon { font-size: 48px; margin-bottom: 16px; }
-        .hello-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-        .hello-desc { color: #888; font-size: 14px; }
-        .stats { display: flex; justify-content: space-around; padding: 20px 0 10px; }
-        .stat { text-align: center; }
-        .stat-value { font-size: 18px; font-weight: 700; color: #667eea; }
-        .stat-label { font-size: 10px; color: #666; text-transform: uppercase; margin-top: 4px; }
-        .feature-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #2a2a3a; }
-        .feature-item:last-child { border-bottom: none; }
-        .feature-icon { width: 40px; height: 40px; background: #1a1a2a; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .feature-content h4 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 2px; }
-        .feature-content p { font-size: 13px; color: #666; }
-        .step { display: flex; gap: 12px; padding: 12px 0; }
-        .step-num { width: 28px; height: 28px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-        .step-content h4 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 2px; }
-        .step-content p { font-size: 13px; color: #666; }
-        .repo-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; background: #141420; border-radius: 12px; text-decoration: none; color: #fff; font-weight: 600; border: 1px solid #2a2a3a; }
-        .repo-link:hover { background: #1a1a2a; border-color: #667eea; }
-        .version-badge { display: inline-block; padding: 4px 12px; background: #1a1a2a; border-radius: 20px; font-size: 12px; color: #667eea; margin-top: 16px; }
-        .footer { text-align: center; padding: 30px; color: #444; font-size: 12px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ANVIL</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0f;color:#e0e0e0;line-height:1.6;min-height:100vh}
+.container{max-width:680px;margin:0 auto;padding:16px}
+@media(max-width:480px){.container{padding:12px}.card{padding:16px}.app-name{font-size:20px}}
+.card{background:#141420;border-radius:16px;padding:20px;margin-bottom:14px;border:1px solid #2a2a3a}
+.md-content{font-size:13px;line-height:1.7}
+.md-content h2{color:#fff;margin:16px 0 8px;font-size:17px;border-bottom:1px solid #2a2a3a;padding-bottom:8px}
+.md-content h3{color:#fff;margin:12px 0 6px;font-size:15px}
+.md-content p{margin-bottom:10px}
+.md-content code{background:#0a0a0f;padding:2px 6px;border-radius:4px;font-size:12px;color:#667eea}
+.md-content pre{background:#0a0a0f;border-radius:8px;padding:12px;margin:10px 0;overflow-x:auto}
+.md-content pre code{background:none;padding:0;color:#e0e0e0}
+.md-content blockquote{border-left:3px solid #667eea;padding-left:12px;margin:10px 0;color:#888}
+.md-content table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}
+.md-content th,.md-content td{border:1px solid #2a2a3a;padding:8px;text-align:left}
+.md-content th{background:#1a1a2a}
+.md-content hr{border:none;border-top:1px solid #2a2a3a;margin:16px 0}
+.header{display:flex;justify-content:space-between;align-items:center;padding:16px 0;gap:12px}
+.app-name{font-size:24px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.app-tagline{color:#666;font-size:11px}
+.lang-selector{position:relative}
+.lang-btn{background:#141420;border:1px solid #2a2a3a;border-radius:8px;padding:8px 10px;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.lang-dropdown{position:absolute;top:100%;right:0;margin-top:4px;background:#141420;border:1px solid #2a2a3a;border-radius:8px;display:none;z-index:100;min-width:130px}
+.lang-dropdown.active{display:block}
+.lang-option{padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px}
+.lang-option:hover{background:#1a1a2a}
+.logo-section-full{text-align:center;padding:8px 0 16px}
+.logo{width:80px;height:80px;margin:0 auto 12px}
+.version-badge{display:inline-block;padding:4px 10px;background:#1a1a2a;border-radius:20px;font-size:11px;color:#667eea;margin-top:8px}
+.card-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#666;margin-bottom:14px}
+.hello-section{text-align:center;padding:24px 0}
+.hello-icon{font-size:40px;margin-bottom:12px}
+.hello-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
+.hello-desc{color:#888;font-size:13px}
+.stats{display:flex;justify-content:space-around;padding:16px 0 8px}
+.stat{text-align:center}
+.stat-value{font-size:16px;font-weight:700;color:#667eea}
+.stat-label{font-size:9px;color:#666;text-transform:uppercase;margin-top:4px}
+.feature-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #2a2a3a}
+.feature-item:last-child{border-bottom:none}
+.feature-icon{width:36px;height:36px;background:#1a1a2a;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.feature-content h4{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.feature-content p{font-size:12px;color:#666}
+.step{display:flex;gap:12px;padding:10px 0}
+.step-num{width:26px;height:26px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.step-content h4{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.step-content p{font-size:12px;color:#666}
+.terminal{background:#0a0a0f;border-radius:10px;overflow:hidden;margin-top:12px}
+.terminal-header{background:#1a1a2a;padding:8px 12px;display:flex;gap:6px}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+.dot-red{background:#ef4444}
+.dot-yellow{background:#eab308}
+.dot-green{background:#22c55e}
+.terminal-body{padding:12px;font-family:monospace;font-size:11px}
+.terminal-line{margin-bottom:5px;display:flex}
+.terminal-prompt{color:#667eea;margin-right:8px}
+.terminal-cmd{color:#e0e0e0}
+.terminal-output{color:#888;padding-left:18px}
+.repo-link{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:#141420;border-radius:12px;text-decoration:none;color:#fff;font-weight:600;border:1px solid #2a2a3a;font-size:14px}
+.repo-link:hover{background:#1a1a2a;border-color:#667eea}
+.footer{text-align:center;padding:24px;color:#444;font-size:11px}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-section">
-                <div class="app-name">ANVIL</div>
-                <div class="app-tagline" data-i18n="tagline">Transform websites into Android APKs</div>
-            </div>
-            <div class="lang-selector">
-                <button class="lang-btn" onclick="td()">
-                    <span id="clf">🌐</span>
-                    <span id="cln">EN</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </button>
-                <div class="lang-dropdown" id="ld">
-                    <div class="lang-option" onclick="sl('en')"><span>🇺🇸</span> English</div>
-                    <div class="lang-option" onclick="sl('pt')"><span>🇧🇷</span> Português</div>
-                    <div class="lang-option" onclick="sl('es')"><span>🇪🇸</span> Español</div>
-                    <div class="lang-option" onclick="sl('it')"><span>🇮🇹</span> Italiano</div>
-                </div>
-            </div>
-        </div>
-        <div class="logo-section-full">
-            <svg class="logo" viewBox="0 0 120 120"><path d="M20 85 L100 85 L95 95 L25 95 Z" fill="#667eea"/><path d="M25 60 L95 60 L100 85 L20 85 Z" fill="#764ba2"/><path d="M10 50 L25 60 L95 60 L110 50 L95 45 L25 45 Z" fill="#8B5CF6"/><path d="M5 48 L25 45 L25 55 L10 52 Z" fill="#667eea"/><path d="M25 45 L95 45 L95 40 L25 40 Z" fill="#A78BFA"/><path d="M55 20 L45 40 L55 40 L50 55 L65 35 L55 35 L60 20 Z" fill="#FBBF24"/><circle cx="70" cy="25" r="3" fill="#FBBF24" opacity="0.8"/><circle cx="45" cy="25" r="2" fill="#FBBF24" opacity="0.6"/><circle cx="60" cy="15" r="2" fill="#FBBF24" opacity="0.7"/></svg>
-            <span class="version-badge">v1.0.0 • Open Source</span>
-        </div>
-        <div class="card">
-            <div class="hello-section">
-                <div class="hello-icon">👋</div>
-                <div class="hello-title" data-i18n="hello_title">Hello, World!</div>
-                <div class="hello-desc" data-i18n="hello_desc">Your APK is ready. This app was built from a simple HTML file using ANVIL.</div>
-            </div>
-            <div class="stats">
-                <div class="stat"><div class="stat-value" id="s">-</div><div class="stat-label" data-i18n="stars">Stars</div></div>
-                <div class="stat"><div class="stat-value" id="f">-</div><div class="stat-label" data-i18n="forks">Forks</div></div>
-                <div class="stat"><div class="stat-value" id="i">-</div><div class="stat-label" data-i18n="issues">Issues</div></div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-title" data-i18n="features">Features</div>
-            <div class="feature-item"><div class="feature-icon">🚀</div><div class="feature-content"><h4 data-i18n="feature1_title">Lightning Fast</h4><p data-i18n="feature1_desc">Build APKs in under 2 minutes</p></div></div>
-            <div class="feature-item"><div class="feature-icon">🎨</div><div class="feature-content"><h4 data-i18n="feature2_title">Beautiful UI</h4><p data-i18n="feature2_desc">Material Design 3 out of the box</p></div></div>
-            <div class="feature-item"><div class="feature-icon">🔒</div><div class="feature-content"><h4 data-i18n="feature3_title">Secure</h4><p data-i18n="feature3_desc">End-to-end encryption & signing</p></div></div>
-            <div class="feature-item"><div class="feature-icon">☁️</div><div class="feature-content"><h4 data-i18n="feature4_title">CI/CD Ready</h4><p data-i18n="feature4_desc">GitHub Actions integration</p></div></div>
-        </div>
-        <div class="card">
-            <div class="card-title" data-i18n="cmd_title">Commands</div>
-            <div class="cmd-item"><div class="cmd-code">pip install anvil-cli<span class="cmd-tag tag-install">Install</span></div><div class="cmd-desc" data-i18n="cmd_install_desc">Install ANVIL CLI globally</div></div>
-            <div class="cmd-item"><div class="cmd-code">anvil init my-app<span class="cmd-tag tag-install">Install</span></div><div class="cmd-desc" data-i18n="cmd_init_desc">Create new project with config wizard</div></div>
-            <div class="cmd-item"><div class="cmd-code">anvil build<span class="cmd-tag tag-build">Build</span></div><div class="cmd-desc" data-i18n="cmd_build_desc">Build debug APK from current directory</div></div>
-            <div class="cmd-item"><div class="cmd-code">anvil build --release<span class="cmd-tag tag-build">Build</span></div><div class="cmd-desc" data-i18n="cmd_build_release_desc">Build signed release APK</div></div>
-            <div class="cmd-item"><div class="cmd-code">anvil config --name "My App"<span class="cmd-tag tag-config">Config</span></div><div class="cmd-desc" data-i18n="cmd_config_desc">Update app name in config</div></div>
-            <div class="cmd-item"><div class="cmd-code">anvil build --low-memory<span class="cmd-tag tag-advanced">Advanced</span></div><div class="cmd-desc" data-i18n="cmd_lowmem_desc">Build with reduced memory usage</div></div>
-        </div>
-        <div class="card">
-            <div class="card-title" data-i18n="term_title">Terminal Preview</div>
-            <div class="terminal"><div class="terminal-header"><div class="terminal-dot dot-red"></div><div class="terminal-dot dot-yellow"></div><div class="terminal-dot dot-green"></div></div><div class="terminal-body"><div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-cmd">anvil build</span></div><div class="terminal-output" data-i18n="term_output1">⚡ Forging APK...</div><div class="terminal-output" data-i18n="term_output2">✓ Compiling Android project...</div><div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-cmd" data-i18n="term_success">✓ APK built: ./apps/app-debug.apk</span></div></div></div>
-        </div>
-        <div class="card">
-            <div class="card-title" data-i18n="next_steps">Next Steps</div>
-            <div class="step"><div class="step-num">1</div><div class="step-content"><h4 data-i18n="step1_title">Fork the repository</h4><p data-i18n="step1_desc">Clone and customize for your needs</p></div></div>
-            <div class="step"><div class="step-num">2</div><div class="step-content"><h4 data-i18n="step2_title">Add your content</h4><p data-i18n="step2_desc">Edit index.html with your website</p></div></div>
-            <div class="step"><div class="step-num">3</div><div class="step-content"><h4 data-i18n="step3_title">Run anvil build</h4><p data-i18n="step3_desc">Generate your APK in seconds</p></div></div>
-            <div class="step"><div class="step-num">4</div><div class="step-content"><h4 data-i18n="step4_title">Publish</h4><p data-i18n="step4_desc">Share on Play Store or as APK</p></div></div>
-        </div>
-        <a href="https://github.com/whesley264-oss/anvil" target="_blank" class="repo-link">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-            <span data-i18n="view_github">View on GitHub</span>
-        </a>
-        <div class="footer"><span data-i18n="footer">ANVIL is open source under MIT License</span><br><span data-i18n="footer2">Built with ❤️ by the community</span></div>
-    </div>
-    <script>
-        const t = {
-            en: {tagline:"Transform websites into Android APKs",hello_title:"Hello, World!",hello_desc:"Your APK is ready. This app was built from a simple HTML file using ANVIL.",stars:"Stars",forks:"Forks",issues:"Issues",features:"Features",feature1_title:"Lightning Fast",feature1_desc:"Build APKs in under 2 minutes",feature2_title:"Beautiful UI",feature2_desc:"Material Design 3 out of the box",feature3_title:"Secure",feature3_desc:"End-to-end encryption & signing",feature4_title:"CI/CD Ready",feature4_desc:"GitHub Actions integration",cmd_title:"Commands",cmd_install_desc:"Install ANVIL CLI globally",cmd_init_desc:"Create new project with config wizard",cmd_build_desc:"Build debug APK from current directory",cmd_build_release_desc:"Build signed release APK",cmd_config_desc:"Update app name in config",cmd_lowmem_desc:"Build with reduced memory usage",term_title:"Terminal Preview",term_output1:"⚡ Forging APK...",term_output2:"✓ Compiling Android project...",term_success:"✓ APK built: ./apps/app-debug.apk",next_steps:"Next Steps",step1_title:"Fork the repository",step1_desc:"Clone and customize for your needs",step2_title:"Add your content",step2_desc:"Edit index.html with your website",step3_title:"Run anvil build",step3_desc:"Generate your APK in seconds",step4_title:"Publish",step4_desc:"Share on Play Store or as APK",view_github:"View on GitHub",footer:"ANVIL is open source under MIT License",footer2:"Built with ❤️ by the community"},
-            pt: {tagline:"Transforme sites em APKs Android",hello_title:"Olá, Mundo!",hello_desc:"Seu APK está pronto. Este app foi criado a partir de um simples arquivo HTML usando ANVIL.",stars:"Estrelas",forks:"Forks",issues:"Issues",features:"Recursos",feature1_title:"Ultra Rápido",feature1_desc:"Build de APKs em menos de 2 minutos",feature2_title:"UI Bonita",feature2_desc:"Material Design 3 pronto para usar",feature3_title:"Seguro",feature3_desc:"Criptografia e assinatura de ponta a ponta",feature4_title:"CI/CD Pronto",feature4_desc:"Integração com GitHub Actions",cmd_title:"Comandos",cmd_install_desc:"Instala o ANVIL CLI globalmente",cmd_init_desc:"Cria novo projeto com assistente de configuração",cmd_build_desc:"Build APK debug do diretório atual",cmd_build_release_desc:"Build APK release assinado",cmd_config_desc:"Atualiza nome do app na configuração",cmd_lowmem_desc:"Build com uso reduzido de memória",term_title:"Preview do Terminal",term_output1:"⚡ Forjando APK...",term_output2:"✓ Compilando projeto Android...",term_success:"✓ APK buildado: ./apps/app-debug.apk",next_steps:"Próximos Passos",step1_title:"Fork do repositório",step1_desc:"Clone e personalize para suas necessidades",step2_title:"Adicione seu conteúdo",step2_desc:"Edite o index.html com seu site",step3_title:"Execute anvil build",step3_desc:"Gere seu APK em segundos",step4_title:"Publique",step4_desc:"Compartilhe na Play Store ou como APK",view_github:"Ver no GitHub",footer:"ANVIL é open source sob licença MIT",footer2:"Construído com ❤️ pela comunidade"},
-            es: {tagline:"Transforma sitios web en APKs Android",hello_title:"¡Hola, Mundo!",hello_desc:"Tu APK está listo. Esta app fue construida desde un simple archivo HTML usando ANVIL.",stars:"Estrellas",forks:"Forks",issues:"Issues",features:"Características",feature1_title:"Ultra Rápido",feature1_desc:"Build de APKs en menos de 2 minutos",feature2_title:"UI Bella",feature2_desc:"Material Design 3 listo para usar",feature3_title:"Seguro",feature3_desc:"Cifrado y firma de extremo a extremo",feature4_title:"CI/CD Listo",feature4_desc:"Integración con GitHub Actions",cmd_title:"Comandos",cmd_install_desc:"Instala ANVIL CLI globalmente",cmd_init_desc:"Crea nuevo proyecto con asistente de configuración",cmd_build_desc:"Build APK debug del directorio actual",cmd_build_release_desc:"Build APK release firmado",cmd_config_desc:"Actualiza nombre de app en configuración",cmd_lowmem_desc:"Build con uso reducido de memoria",term_title:"Preview Terminal",term_output1:"⚡ Forjando APK...",term_output2:"✓ Compilando proyecto Android...",term_success:"✓ APK construido: ./apps/app-debug.apk",next_steps:"Próximos Pasos",step1_title:"Fork del repositorio",step1_desc:"Clona y personaliza para tus necesidades",step2_title:"Añade tu contenido",step2_desc:"Edita index.html con tu sitio web",step3_title:"Ejecuta anvil build",step3_desc:"Genera tu APK en segundos",step4_title:"Publica",step4_desc:"Comparte en Play Store o como APK",view_github:"Ver en GitHub",footer:"ANVIL es open source bajo licencia MIT",footer2:"Construido con ❤️ por la comunidad"},
-            it: {tagline:"Trasforma siti web in APK Android",hello_title:"Ciao, Mondo!",hello_desc:"Il tuo APK è pronto. Questa app è stata creata da un semplice file HTML usando ANVIL.",stars:"Stelle",forks:"Forks",issues:"Issues",features:"Funzionalità",feature1_title:"Ultra Veloce",feature1_desc:"Build di APK in meno di 2 minuti",feature2_title:"UI Bella",feature2_desc:"Material Design 3 pronto all'uso",feature3_title:"Sicuro",feature3_desc:"Crittografia e firma end-to-end",feature4_title:"CI/CD Pronto",feature4_desc:"Integrazione con GitHub Actions",cmd_title:"Comandi",cmd_install_desc:"Installa ANVIL CLI globalmente",cmd_init_desc:"Crea nuovo progetto con assistente di configurazione",cmd_build_desc:"Build APK debug dalla cartella corrente",cmd_build_release_desc:"Build APK release firmato",cmd_config_desc:"Aggiorna nome app nella configurazione",cmd_lowmem_desc:"Build con uso ridotto di memoria",term_title:"Anteprima Terminale",term_output1:"⚡ Forgiando APK...",term_output2:"✓ Compilando progetto Android...",term_success:"✓ APK costruito: ./apps/app-debug.apk",next_steps:"Prossimi Passi",step1_title:"Fork del repository",step1_desc:"Clona e personalizza per le tue esigenze",step2_title:"Aggiungi il tuo contenuto",step2_desc:"Modifica index.html con il tuo sito",step3_title:"Esegui anvil build",step3_desc:"Genera il tuo APK in secondi",step4_title:"Pubblica",step4_desc:"Condividi su Play Store o come APK",view_github:"Vedi su GitHub",footer:"ANVIL è open source sotto licenza MIT",footer2:"Costruito con ❤️ dalla comunità"}
-        };
-        const l = {en:{f:'🇺🇸',n:'EN'},pt:{f:'🇧🇷',n:'PT'},es:{f:'🇪🇸',n:'ES'},it:{f:'🇮🇹',n:'IT'}};
-        let c = localStorage.getItem('anvil-lang') || 'en';
-        function td() { document.getElementById('ld').classList.toggle('active'); }
-        function sl(lang) { c = lang; localStorage.setItem('anvil-lang', lang); ul(); ub(); document.getElementById('ld').classList.remove('active'); }
-        function ul() { document.querySelectorAll('[data-i18n]').forEach(e => { const k = e.getAttribute('data-i18n'); if (t[c][k]) e.textContent = t[c][k]; }); }
-        function ub() { document.getElementById('clf').textContent = l[c].f; document.getElementById('cln').textContent = l[c].n; }
-        document.addEventListener('click', e => { if (!document.querySelector('.lang-selector').contains(e.target)) document.getElementById('ld').classList.remove('active'); });
-        ub(); ul();
-        fetch('https://api.github.com/repos/whesley264-oss/anvil').then(r => r.json()).then(d => { document.getElementById('s').textContent = d.stargazers_count; document.getElementById('f').textContent = d.forks_count; document.getElementById('i').textContent = d.open_issues_count; });
-    </script>
+<div class="container">
+<div class="header">
+<div class="logo-section">
+<div class="app-name">ANVIL</div>
+<div class="app-tagline" data-i18n="tagline">Transform websites into APKs</div>
+</div>
+<div class="lang-selector">
+<button class="lang-btn" onclick="td()"><span id="clf">🌐</span><span id="cln">EN</span></button>
+<div class="lang-dropdown" id="ld">
+<div class="lang-option" onclick="sl('en')">🇺🇸 English</div>
+<div class="lang-option" onclick="sl('pt')">🇧🇷 Português</div>
+<div class="lang-option" onclick="sl('es')">🇪🇸 Español</div>
+<div class="lang-option" onclick="sl('it')">🇮🇹 Italiano</div>
+</div>
+</div>
+</div>
+<div class="logo-section-full">
+<svg class="logo" viewBox="0 0 120 120"><path d="M20 85 L100 85 L95 95 L25 95 Z" fill="#667eea"/><path d="M25 60 L95 60 L100 85 L20 85 Z" fill="#764ba2"/><path d="M10 50 L25 60 L95 60 L110 50 L95 45 L25 45 Z" fill="#8B5CF6"/><path d="M5 48 L25 45 L25 55 L10 52 Z" fill="#667eea"/><path d="M25 45 L95 45 L95 40 L25 40 Z" fill="#A78BFA"/><path d="M55 20 L45 40 L55 40 L50 55 L65 35 L55 35 L60 20 Z" fill="#FBBF24"/><circle cx="70" cy="25" r="3" fill="#FBBF24" opacity="0.8"/><circle cx="45" cy="25" r="2" fill="#FBBF24" opacity="0.6"/><circle cx="60" cy="15" r="2" fill="#FBBF24" opacity="0.7"/></svg>
+<span class="version-badge">v1.0.0 • Open Source</span>
+</div>
+<div class="card">
+<div class="hello-section">
+<div class="hello-icon">👋</div>
+<div class="hello-title" data-i18n="hello_title">Hello, World!</div>
+<div class="hello-desc" data-i18n="hello_desc">Your APK is ready.</div>
+</div>
+<div class="stats">
+<div class="stat"><div class="stat-value" id="s">-</div><div class="stat-label" data-i18n="stars">Stars</div></div>
+<div class="stat"><div class="stat-value" id="f">-</div><div class="stat-label" data-i18n="forks">Forks</div></div>
+<div class="stat"><div class="stat-value" id="i">-</div><div class="stat-label" data-i18n="issues">Issues</div></div>
+</div>
+</div>
+<div class="card">
+<div class="card-title" data-i18n="features">Features</div>
+<div class="feature-item"><div class="feature-icon">🚀</div><div class="feature-content"><h4 data-i18n="feature1_title">Lightning Fast</h4><p data-i18n="feature1_desc">Build APKs in under 2 minutes</p></div></div>
+<div class="feature-item"><div class="feature-icon">🎨</div><div class="feature-content"><h4 data-i18n="feature2_title">Beautiful UI</h4><p data-i18n="feature2_desc">Material Design 3</p></div></div>
+<div class="feature-item"><div class="feature-icon">🔒</div><div class="feature-content"><h4 data-i18n="feature3_title">Secure</h4><p data-i18n="feature3_desc">End-to-end encryption</p></div></div>
+<div class="feature-item"><div class="feature-icon">☁️</div><div class="feature-content"><h4 data-i18n="feature4_title">CI/CD Ready</h4><p data-i18n="feature4_desc">GitHub Actions</p></div></div>
+</div>
+<div class="card">
+<div class="card-title" data-i18n="doc_title">Documentation</div>
+<div class="md-content" id="md-doc"></div>
+</div>
+<div class="card">
+<div class="card-title" data-i18n="term_title">Terminal Preview</div>
+<div class="terminal"><div class="terminal-header"><div class="terminal-dot dot-red"></div><div class="terminal-dot dot-yellow"></div><div class="terminal-dot dot-green"></div></div><div class="terminal-body"><div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-cmd">anvil build</span></div><div class="terminal-output" data-i18n="term_output1">⚡ Forging APK...</div><div class="terminal-output" data-i18n="term_output2">✓ Compiling...</div><div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-cmd" data-i18n="term_success">✓ APK built</span></div></div></div>
+</div>
+<div class="card">
+<div class="card-title" data-i18n="next_steps">Next Steps</div>
+<div class="step"><div class="step-num">1</div><div class="step-content"><h4 data-i18n="step1_title">Fork repository</h4><p data-i18n="step1_desc">Clone and customize</p></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content"><h4 data-i18n="step2_title">Add content</h4><p data-i18n="step2_desc">Edit index.html</p></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content"><h4 data-i18n="step3_title">Run anvil build</h4><p data-i18n="step3_desc">Generate APK</p></div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content"><h4 data-i18n="step4_title">Publish</h4><p data-i18n="step4_desc">Share on Play Store</p></div></div>
+</div>
+<a href="https://github.com/whesley264-oss/anvil" target="_blank" class="repo-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg><span data-i18n="view_github">View on GitHub</span></a>
+<div class="footer"><span data-i18n="footer">MIT License</span><br><span data-i18n="footer2">Built with ❤️</span></div>
+</div>
+<script>
+const t = {
+en:{tagline:"Transform websites into APKs",hello_title:"Hello, World!",hello_desc:"Your APK is ready.",stars:"Stars",forks:"Forks",issues:"Issues",features:"Features",feature1_title:"Lightning Fast",feature1_desc:"2 min build",feature2_title:"Beautiful UI",feature2_desc:"Material Design 3",feature3_title:"Secure",feature3_desc:"End-to-end encryption",feature4_title:"CI/CD Ready",feature4_desc:"GitHub Actions",doc_title:"Documentation",term_title:"Terminal Preview",term_output1:"⚡ Forging APK...",term_output2:"✓ Compiling...",term_success:"✓ APK built",next_steps:"Next Steps",step1_title:"Fork repository",step1_desc:"Clone and customize",step2_title:"Add content",step2_desc:"Edit index.html",step3_title:"Run anvil build",step3_desc:"Generate APK",step4_title:"Publish",step4_desc:"Share on Play Store",view_github:"View on GitHub",footer:"MIT License",footer2:"Built with ❤️",md_doc:"## Quick Start\n\nInstall and build your first APK.\n\n### Installation\n\n```bash\npip install anvil-cli\n```\n\n### Create Project\n\n```bash\nanvil init my-app\n```\n\n### Build APK\n\n| Command | Description |\n|---------|-------------|\n| `anvil build` | Debug APK |\n| `anvil build --release` | Signed APK |\n\n> **Tip:** Run `anvil --help` for more options.\n\n---\n\n## Configuration\n\nEdit `anvil.config.json`:\n\n```json\n{\n  \"name\": \"My App\",\n  \"package\": \"com.example.app\",\n  \"version\": \"1.0.0\"\n}\n```\n\n### Options\n\n- **name** - App name\n- **package** - Android package\n- **version** - Version\n- **theme** - `light`, `dark`, `system`\n\n---\n\n## GitHub Actions\n\n```yaml\n- name: Build APK\n  run: anvil build --release\n```"},
+pt:{tagline:"Transforme sites em APKs",hello_title:"Olá, Mundo!",hello_desc:"Seu APK está pronto.",stars:"Estrelas",forks:"Forks",issues:"Issues",features:"Recursos",feature1_title:"Ultra Rápido",feature1_desc:"Build em 2 min",feature2_title:"UI Bonita",feature2_desc:"Material Design 3",feature3_title:"Seguro",feature3_desc:"Criptografia E2E",feature4_title:"CI/CD Pronto",feature4_desc:"GitHub Actions",doc_title:"Documentação",term_title:"Preview Terminal",term_output1:"⚡ Forjando APK...",term_output2:"✓ Compilando...",term_success:"✓ APK buildado",next_steps:"Próximos Passos",step1_title:"Fork repositório",step1_desc:"Clone e personalize",step2_title:"Adicione conteúdo",step2_desc:"Edite index.html",step3_title:"Execute anvil build",step3_desc:"Gere APK",step4_title:"Publique",step4_desc:"Compartilhe",view_github:"Ver no GitHub",footer:"Licença MIT",footer2:"Construído com ❤️",md_doc:"## Início Rápido\n\nInstale e build seu primeiro APK.\n\n### Instalação\n\n```bash\npip install anvil-cli\n```\n\n### Criar Projeto\n\n```bash\nanvil init meu-app\n```\n\n### Build APK\n\n| Comando | Descrição |\n|---------|-------------|\n| `anvil build` | APK debug |\n| `anvil build --release` | APK assinado |\n\n> **Dica:** Execute `anvil --help` para mais opções.\n\n---\n\n## Configuração\n\nEdite `anvil.config.json`:\n\n```json\n{\n  \"name\": \"Meu App\",\n  \"package\": \"com.exemplo.app\",\n  \"version\": \"1.0.0\"\n}\n```\n\n### Opções\n\n- **name** - Nome do app\n- **package** - Pacote Android\n- **version** - Versão\n- **theme** - `light`, `dark`, `system`\n\n---\n\n## GitHub Actions\n\n```yaml\n- name: Build APK\n  run: anvil build --release\n```"},
+es:{tagline:"Transforma sitios en APKs",hello_title:"¡Hola, Mundo!",hello_desc:"Tu APK está listo.",stars:"Estrellas",forks:"Forks",issues:"Issues",features:"Características",feature1_title:"Ultra Rápido",feature1_desc:"Build en 2 min",feature2_title:"UI Bella",feature2_desc:"Material Design 3",feature3_title:"Seguro",feature3_desc:"Cifrado E2E",feature4_title:"CI/CD Listo",feature4_desc:"GitHub Actions",doc_title:"Documentación",term_title:"Preview Terminal",term_output1:"⚡ Forjando APK...",term_output2:"✓ Compilando...",term_success:"✓ APK construido",next_steps:"Próximos Pasos",step1_title:"Fork repositorio",step1_desc:"Clona y personaliza",step2_title:"Añade contenido",step2_desc:"Edita index.html",step3_title:"Ejecuta anvil build",step3_desc:"Genera APK",step4_title:"Publica",step4_desc:"Comparte",view_github:"Ver en GitHub",footer:"Licencia MIT",footer2:"Construido con ❤️",md_doc:"## Inicio Rápido\n\nInstala y build tu primer APK.\n\n### Instalación\n\n```bash\npip install anvil-cli\n```\n\n### Crear Proyecto\n\n```bash\nanvil init mi-app\n```\n\n### Build APK\n\n| Comando | Descripción |\n|---------|-------------|\n| `anvil build` | APK debug |\n| `anvil build --release` | APK firmado |\n\n> **Consejo:** Ejecuta `anvil --help` para más opciones.\n\n---\n\n## Configuración\n\nEdita `anvil.config.json`:\n\n```json\n{\n  \"name\": \"Mi App\",\n  \"package\": \"com.ejemplo.app\",\n  \"version\": \"1.0.0\"\n}\n```\n\n### Opciones\n\n- **name** - Nombre de app\n- **package** - Paquete Android\n- **version** - Versión\n- **theme** - `light`, `dark`, `system`\n\n---\n\n## GitHub Actions\n\n```yaml\n- name: Build APK\n  run: anvil build --release\n```"},
+it:{tagline:"Trasforma siti in APK",hello_title:"Ciao, Mondo!",hello_desc:"Il tuo APK è pronto.",stars:"Stelle",forks:"Forks",issues:"Issues",features:"Funzionalità",feature1_title:"Ultra Veloce",feature1_desc:"Build in 2 min",feature2_title:"UI Bella",feature2_desc:"Material Design 3",feature3_title:"Sicuro",feature3_desc:"Crittografia E2E",feature4_title:"CI/CD Pronto",feature4_desc:"GitHub Actions",doc_title:"Documentazione",term_title:"Anteprima Terminale",term_output1:"⚡ Forgiando APK...",term_output2:"✓ Compilando...",term_success:"✓ APK costruito",next_steps:"Prossimi Passi",step1_title:"Fork repository",step1_desc:"Clona e personalizza",step2_title:"Aggiungi contenuto",step2_desc:"Modifica index.html",step3_title:"Esegui anvil build",step3_desc:"Genera APK",step4_title:"Pubblica",step4_desc:"Condividi",view_github:"Vedi su GitHub",footer:"Licenza MIT",footer2:"Costruito con ❤️",md_doc:"## Avvio Rapido\n\nInstalla e builda il tuo primo APK.\n\n### Installazione\n\n```bash\npip install anvil-cli\n```\n\n### Crea Progetto\n\n```bash\nanvil init mia-app\n```\n\n### Build APK\n\n| Comando | Descrizione |\n|---------|-------------|\n| `anvil build` | APK debug |\n| `anvil build --release` | APK firmato |\n\n> **Suggerimento:** Esegui `anvil --help` per più opzioni.\n\n---\n\n## Configurazione\n\nModifica `anvil.config.json`:\n\n```json\n{\n  \"name\": \"Mia App\",\n  \"package\": \"com.esempio.app\",\n  \"version\": \"1.0.0\"\n}\n```\n\n### Opzioni\n\n- **name** - Nome app\n- **package** - Pacchetto Android\n- **version** - Versione\n- **theme** - `light`, `dark`, `system`\n\n---\n\n## GitHub Actions\n\n```yaml\n- name: Build APK\n  run: anvil build --release\n```"}
+};
+const l = {en:{f:'🇺🇸',n:'EN'},pt:{f:'🇧🇷',n:'PT'},es:{f:'🇪🇸',n:'ES'},it:{f:'🇮🇹',n:'IT'}};
+let c = localStorage.getItem('anvil-lang') || 'en';
+function td() { document.getElementById('ld').classList.toggle('active'); }
+function sl(lang) { c = lang; localStorage.setItem('anvil-lang', lang); ul(); ub(); document.getElementById('ld').classList.remove('active'); }
+function parseMd(md) {
+return md.replace(/^### (.*$)/gm, '<h3>$1</h3>').replace(/^## (.*$)/gm, '<h2>$1</h2>').replace(/```(\w+)?\n([\s\S]*?)```/g, (_,__,code) => '<pre><code>' + code.trim() + '</code></pre>').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>').replace(/^---$/gm, '<hr>').replace(/\| (.+) \|$/gm, (m) => { const cells = m.split('|').slice(1,-1); const isHeader = cells.some(x => x.trim().match(/^-+$/)); if (isHeader) return ''; return '<tr>' + cells.map(x => '<td>' + x.trim() + '</td>').join('') + '</tr>'; }).replace(/(<tr>.*<\/tr>)/gs, '<table>$1</table>').replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>').replace(/<p><(h[123])/g, '<$1').replace(/(<\/h[123]>)<\/p>/g, '$1');
+}
+function ul() { document.querySelectorAll('[data-i18n]').forEach(e => { const k = e.getAttribute('data-i18n'); if (t[c][k]) { if (k === 'md_doc') { e.innerHTML = parseMd(t[c][k]); } else { e.textContent = t[c][k]; } } }); }
+function ub() { document.getElementById('clf').textContent = l[c].f; document.getElementById('cln').textContent = l[c].n; }
+document.addEventListener('click', e => { if (!document.querySelector('.lang-selector').contains(e.target)) document.getElementById('ld').classList.remove('active'); });
+ub(); ul();
+fetch('https://api.github.com/repos/whesley264-oss/anvil').then(r => r.json()).then(d => { document.getElementById('s').textContent = d.stargazers_count; document.getElementById('f').textContent = d.forks_count; document.getElementById('i').textContent = d.open_issues_count; });
+</script>
 </body>
 </html>
