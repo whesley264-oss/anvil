@@ -116,6 +116,11 @@
             margin-top: 4px;
         }
 
+        .loading {
+            color: #666;
+            font-size: 12px;
+        }
+
         /* Features */
         .feature-item {
             display: flex;
@@ -229,21 +234,6 @@
             color: #444;
             font-size: 12px;
         }
-
-        /* Version info */
-        .version-info {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #2a2a3a;
-        }
-
-        .version-item {
-            font-size: 11px;
-            color: #555;
-        }
     </style>
 </head>
 <body>
@@ -284,16 +274,16 @@
             
             <div class="stats">
                 <div class="stat">
-                    <div class="stat-value">50K+</div>
-                    <div class="stat-label">Downloads</div>
+                    <div class="stat-value" id="stars">-</div>
+                    <div class="stat-label">Stars</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value">4.9★</div>
-                    <div class="stat-label">Rating</div>
+                    <div class="stat-value" id="forks">-</div>
+                    <div class="stat-label">Forks</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value">99%</div>
-                    <div class="stat-label">Success</div>
+                    <div class="stat-value" id="issues">-</div>
+                    <div class="stat-label">Issues</div>
                 </div>
             </div>
         </div>
@@ -386,5 +376,23 @@
             Built with ❤️ by the community
         </div>
     </div>
+
+    <script>
+        // Fetch real GitHub stats
+        fetch('https://api.github.com/repos/whesley264-oss/anvil')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('stars').textContent = data.stargazers_count.toLocaleString();
+                document.getElementById('forks').textContent = data.forks_count.toLocaleString();
+                document.getElementById('issues').textContent = data.open_issues_count.toLocaleString();
+            })
+            .catch(error => {
+                // Fallback values if API fails
+                document.getElementById('stars').textContent = '0';
+                document.getElementById('forks').textContent = '0';
+                document.getElementById('issues').textContent = '0';
+                console.log('Could not fetch GitHub stats:', error);
+            });
+    </script>
 </body>
 </html>
