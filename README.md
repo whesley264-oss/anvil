@@ -1,6 +1,6 @@
 # 🔨 ANVIL - Transform Websites into Android APKs
 
-```text
+```
     _   _  _     _  ___  _      
    / \ | \ | || |   | ||_ _|| |     
   / _ \|  \| || |   | | | | | |     
@@ -46,44 +46,32 @@ anvil init
 
 ---
 
+## 📦 Installation Modes
+
+ANVIL supports 4 installation modes to fit your needs:
+
+| Mode | Size | Description | Use Case |
+|------|------|-------------|----------|
+| **light** | ~10MB | Minimal CLI only | Testing, quick builds |
+| **normal** | ~50MB | Standard installation | Most users |
+| **full** | ~2GB | Everything included | Full Android SDK |
+
+### Quick Install (Normal Mode)
+```bash
+curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash
+```
+
+### Light Mode (No SDK Required)
+```bash
+curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash -s -- --mode light
+```
+
+### Full Mode (With Android SDK)
+```bash
+curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash -s -- --mode full
+```
 
 ---
-
-## [NEW] What's New (v0.4.0)
-
-### New Commands
-
-| Command | Description |
-|---------|-------------|
-| `anvil demo` | Create a demo APK to test your ANVIL installation |
-| `anvil update` | Update ANVIL to the latest version |
-
-### anvil demo
-
-Just installed ANVIL? Test it immediately without creating a project!
-
-```bash
-anvil demo
-```
-
-This creates a beautiful welcome APK proving your installation works:
-
-- [OK] "ANVIL is working!"
-- [OK] "APK generated successfully"
-- [OK] "Ready for production"
-- [PHONE] Features showcase (WebView, Native APK, Fast Build, Secure)
-
-Like `vue create` or `npm init` - test your setup instantly!
-
-### anvil update
-
-Keep ANVIL up-to-date with one command:
-
-```bash
-anvil update              # Check and update
-anvil update --check      # Just check for updates
-anvil update --force      # Force reinstall current version
-```
 
 ## 🚀 Quick Start
 
@@ -100,6 +88,7 @@ zsh
 ### Step 3: Verify
 ```bash
 anvil --version
+anvil doctor
 ```
 
 ### Step 4: Create your first app
@@ -109,8 +98,41 @@ anvil init
 
 ### Step 5: Build APK
 ```bash
-anvil build
+anvil build        # Full build (needs SDK)
+anvil pack         # Light build (no SDK needed)
 ```
+
+---
+
+## 🔧 All Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `anvil init` | Create new project | `anvil init` |
+| `anvil build` | Compile APK (needs SDK) | `anvil build` |
+| `anvil build --release` | Build release APK | `anvil build --release` |
+| `anvil build --low-memory` | Mobile build | `anvil build --low-memory` |
+| `anvil pack` | Light build (no SDK) | `anvil pack` |
+| `anvil quick-build` | Build from URL/GitHub/ZIP | `anvil quick-build --url https://github.com/user/repo` |
+| `anvil sign` | Sign APK | `anvil sign --generate` |
+| `anvil doctor` | Check system | `anvil doctor` |
+| `anvil doctor --fix` | Auto-fix issues | `anvil doctor --fix` |
+| `anvil preview` | Test in browser | `anvil preview` |
+| `anvil deploy` | Install on device | `anvil deploy` |
+| `anvil demo` | Create demo APK | `anvil demo` |
+| `anvil lang` | Change language | `anvil lang --set pt` |
+| `anvil lang --list` | List languages | `anvil lang --list` |
+| `anvil lang --show` | Show current | `anvil lang --show` |
+| `anvil update` | Update ANVIL | `anvil update` |
+| `anvil update --check` | Check updates | `anvil update --check` |
+| `anvil config` | Edit config | `anvil config --show` |
+| `anvil setup` | Setup wizard | `anvil setup` |
+| `anvil setup --install-sdk` | Install Android SDK | `anvil setup --install-sdk` |
+| `anvil inspect <url>` | Analyze website | `anvil inspect https://example.com` |
+| `anvil run` | Dev server with live reload | `anvil run` |
+| `anvil clean` | Remove build artifacts | `anvil clean` |
+| `anvil logs` | View build logs | `anvil logs` |
+| `anvil plugin` | Manage plugins | `anvil plugin list` |
 
 ---
 
@@ -120,34 +142,23 @@ anvil build
 ```bash
 anvil lang
 ```
-This shows a menu with all 4 languages. Select one and it's saved.
 
 ### Method 2: Direct Command
 ```bash
-# Change to Portuguese
-anvil lang --set pt
-
-# Change to Spanish
-anvil lang --set es
-
-# Change to Mandarin
-anvil lang --set zh
-
-# Change to English
-anvil lang --set en
+anvil lang --set pt   # Portuguese
+anvil lang --set es   # Spanish
+anvil lang --set zh   # Mandarin
+anvil lang --set en   # English
 ```
 
-### Method 3: Show Current Language
-```bash
-anvil lang --show
-```
+### Supported Languages
 
-### List All Languages
-```bash
-anvil lang --list
-```
-
-**Note:** After changing language, the new language will apply to ALL ANVIL commands (init, build, doctor, etc.)
+| Code | Language | Flag |
+|------|----------|------|
+| `en` | English | 🇺🇸 |
+| `pt` | Português | 🇧🇷 |
+| `es` | Español | 🇪🇸 |
+| `zh` | 中文 | 🇨🇳 |
 
 ---
 
@@ -160,44 +171,26 @@ anvil lang --list
 pkg update && pkg upgrade
 ```
 
-#### Step 2: Install dependencies
+#### Step 2: Install ANVIL (Choose your mode)
 ```bash
-pkg install python git openjdk-17
-```
-
-#### Step 3: Install ANVIL
-```bash
+# Normal (~50MB)
 curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash
+
+# Light (~10MB) - No SDK needed
+curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash -s -- --mode light
+
+# Full (~2GB) - With Android SDK
+curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash -s -- --mode full
 ```
 
-#### Step 4: **SWITCH TO ZSH** (CRITICAL!)
+#### Step 3: **SWITCH TO ZSH** (CRITICAL!)
 ```bash
 zsh
 ```
 
-#### Step 5: Verify
+#### Step 4: Verify
 ```bash
-anvil --version
-```
-
-**If you get "command not found":**
-```bash
-# Check if launcher exists
-ls -la $PREFIX/bin/anvil
-
-# If not, recreate manually
-cat > $PREFIX/bin/anvil << 'EOF'
-#!/bin/bash
-export ANVIL_HOME="$HOME/.anvil"
-export PYTHONPATH="$ANVIL_HOME:$PYTHONPATH"
-exec python3 "$ANVIL_HOME/anvil_cli.py" "$@"
-EOF
-
-chmod +x $PREFIX/bin/anvil
-
-# Now try
-zsh
-anvil --version
+anvil doctor
 ```
 
 ---
@@ -258,17 +251,17 @@ anvil --version
 pkg update && pkg upgrade
 pkg install python git openjdk-17
 
-# Install ANVIL
-curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash
+# Install ANVIL (light mode for mobile)
+curl -s https://raw.githubusercontent.com/whesley264-oss/anvil/main/install.sh | bash -s -- --mode light
 
 # IMPORTANT: Switch to zsh
 zsh
 
-# Change language to Portuguese
-anvil lang --set pt
-
 # Check system
 anvil doctor
+
+# Change language to Portuguese
+anvil lang --set pt
 
 # Create project
 anvil init
@@ -314,43 +307,131 @@ When you run 'anvil init', you'll be asked:
 # Inside your project folder
 cd meu-projeto
 
-# Compile
+# Light build (no SDK needed)
+anvil pack -o meu-app.apk
+
+# Or full build (needs SDK)
 anvil build
-
-# Result: dist/app-1.0.0.apk
-```
-
-#### 4. Installing on Device
-```bash
-# Connect device via USB with debugging enabled
-anvil deploy
-
-# Or use ADB directly
-adb install dist/app-1.0.0.apk
 ```
 
 ---
 
-## 📋 All Commands
+## 🔨 Build Modes Explained
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `anvil init` | Create new project | `anvil init` |
-| `anvil build` | Compile APK | `anvil build` |
-| `anvil build --low-memory` | Mobile build | `anvil build --low-memory` |
-| `anvil sign` | Generate keystore | `anvil sign --generate` |
-| `anvil doctor` | Check system | `anvil doctor` |
-| `anvil preview` | Test in browser | `anvil preview` |
-| `anvil deploy` | Install device | `anvil deploy` |
-| `anvil quick-build --url URL` | Fast build | `anvil quick-build --url https://github.com/user/repo` |
-| `anvil lang` | Change language | `anvil lang --set pt` |
-| `anvil lang --list` | List languages | `anvil lang --list` |
-| `anvil lang --show` | Show current | `anvil lang --show` |
-| `anvil demo` | Test installation | `anvil demo` |
-| `anvil update` | Update ANVIL | `anvil update --check` |
-| `anvil config` | Edit config | `anvil config --show` |
-| `anvil plugin` | Manage plugins | `anvil plugin list` |
-| `anvil setup` | Setup wizard | `anvil setup --termux` |
+### `anvil pack` (Light Build)
+- No Android SDK required
+- Creates APK using minimal tools
+- Works on mobile devices
+- Good for quick testing
+
+### `anvil build` (Full Build)
+- Requires Android SDK
+- Creates proper signed APKs
+- Full optimization
+- Ready for Play Store
+
+### `anvil quick-build` (Quick Build)
+- Build from GitHub, ZIP, or URL
+- One command to APK
+- Great for demos
+
+---
+
+## 📋 Project Configuration
+
+Create `anvil.config.json` in your project folder:
+
+```json
+{
+  "name": "My App",
+  "author": "John Doe",
+  "authorEmail": "john@example.com",
+  "package": "com.example.myapp",
+  "version": "1.0.0",
+  "description": "My awesome app",
+  "theme": "system",
+  "renderMode": "webview",
+  "permissions": ["internet", "camera"],
+  "features": ["offline-cache", "biometric"]
+}
+```
+
+---
+
+## 🚀 Quick Build from URL
+
+```bash
+# From GitHub
+anvil quick-build --url https://github.com/user/repo
+
+# From ZIP
+anvil quick-build --url https://example.com/app.zip
+
+# With custom name
+anvil quick-build --url https://github.com/user/repo --name "My App"
+```
+
+---
+
+## 🔐 Signing APKs
+
+### Generate Keystore
+```bash
+anvil sign --generate
+```
+
+### Sign Existing APK
+```bash
+anvil sign --keystore mykeystore.jks --alias myalias
+```
+
+---
+
+## 📱 Termux-Specific Notes
+
+### Why ZSH?
+- Termux defaults to bash
+- ANVIL's launcher is configured for zsh
+- ZSH provides better shell experience
+
+### How to Always Use ZSH in Termux:
+1. Open Termux
+2. Type `zsh` and press Enter
+3. Now you can use `anvil` command
+
+### Make ZSH Default:
+```bash
+# Edit ~/.bashrc to auto-start zsh
+echo 'if [ -z "$ZSH_VERSION" ]; then exec zsh; fi' >> ~/.bashrc
+
+# Restart Termux
+```
+
+### Exit ZSH:
+```bash
+# Type 'exit' to go back to bash
+exit
+```
+
+---
+
+## 🛠️ Requirements
+
+### Termux (Mobile) - Light Mode
+- Python 3.9+
+- Git
+- ~10MB storage
+
+### Termux (Mobile) - Full Mode
+- Python 3.9+
+- Git
+- OpenJDK 17
+- ~2GB storage (for Android SDK)
+
+### Desktop
+- Python 3.9+
+- Java JDK 11+
+- Git
 
 ---
 
@@ -401,22 +482,6 @@ sudo apt install openjdk-17-jdk
 
 ---
 
-### Problem: Language not changing
-
-**Solution:**
-```bash
-# Check current language
-anvil lang --show
-
-# Set language again
-anvil lang --set pt
-
-# Verify config file
-cat ~/.anvil/config.json
-```
-
----
-
 ### Problem: Still having issues?
 
 **Full reset:**
@@ -432,106 +497,6 @@ zsh
 
 # Test
 anvil --version
-```
-
----
-
-## 🌐 Supported Languages
-
-| Code | Language | Flag | Status |
-|------|----------|------|--------|
-| `en` | English | 🇺🇸 | Default |
-| `pt` | Português | 🇧🇷 | ✅ |
-| `es` | Español | 🇪🇸 | ✅ |
-| `zh` | 中文 | 🇨🇳 | ✅ |
-
-### Quick Language Reference:
-
-| Task | Command |
-|------|---------|
-| Change to Portuguese | `anvil lang --set pt` |
-| Change to Spanish | `anvil lang --set es` |
-| Change to Mandarin | `anvil lang --set zh` |
-| Change to English | `anvil lang --set en` |
-| List all | `anvil lang --list` |
-| Show current | `anvil lang --show` |
-
----
-
-## 📱 Termux-Specific Notes
-
-### Why ZSH?
-- Termux defaults to bash
-- ANVIL's launcher is configured for zsh
-- ZSH provides better shell experience
-
-### How to Always Use ZSH in Termux:
-1. Open Termux
-2. Type `zsh` and press Enter
-3. Now you can use `anvil` command
-
-### Make ZSH Default:
-```bash
-# Edit ~/.bashrc to auto-start zsh
-echo 'if [ -z "$ZSH_VERSION" ]; then exec zsh; fi' >> ~/.bashrc
-
-# Restart Termux
-```
-
-### Exit ZSH:
-```bash
-# Type 'exit' to go back to bash
-exit
-```
-
----
-
-## 📦 Project Configuration
-
-Create `anvil.config.json` in your project folder:
-
-```json
-{
-  "name": "My App",
-  "author": "John Doe",
-  "authorEmail": "john@example.com",
-  "package": "com.example.myapp",
-  "version": "1.0.0",
-  "description": "My awesome app",
-  "theme": "system",
-  "renderMode": "webview",
-  "permissions": ["internet", "camera"],
-  "features": ["offline-cache", "biometric"]
-}
-```
-
----
-
-## 🔐 Signing APKs
-
-### Generate Keystore
-```bash
-anvil sign --generate
-```
-
-### Sign Existing APK
-```bash
-anvil sign --keystore mykeystore.jks --alias myalias
-```
-
----
-
-## 🚀 Quick Build from URL
-
-```bash
-# From GitHub
-anvil quick-build --url https://github.com/user/repo
-
-# From ZIP
-anvil quick-build --url https://example.com/app.zip
-
-# With custom name
-anvil quick-build --url https://github.com/user/repo --name "My App"
 ```
 
 ---
@@ -565,22 +530,6 @@ anvil quick-build --url https://github.com/user/repo --name "My App"
 
 ---
 
-## 🛠️ Requirements
-
-### Termux (Mobile)
-- Python 3.9+
-- Git
-- OpenJDK 17
-- Android SDK (optional for builds)
-
-### Desktop
-- Python 3.9+
-- Java JDK 11+
-- Android SDK
-- Git
-
----
-
 ## 🤝 Contributing
 
 Contributions welcome!
@@ -598,7 +547,4 @@ MIT License
   <br>
   <a href="https://github.com/whesley264-oss/anvil">GitHub</a> •
   <a href="https://github.com/whesley264-oss/anvil/issues">Issues</a>
-  <br>
-  <br>
-  ⭐ Star this repo if ANVIL helped you!
 </p>
