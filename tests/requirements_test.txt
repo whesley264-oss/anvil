@@ -1,0 +1,17 @@
+# ANVIL Test Requirements
+# pip install -r requirements_test.txt
+
+-r requirements.txt
+
+# Code quality
+flake8>=7.0.0
+black>=24.0.0
+isort>=5.13.0
+
+# Security
+bandit>=1.7.6
+safety>=3.0.0
+
+# Testing
+pytest>=8.0.0
+pytest-cov>=4.1.0

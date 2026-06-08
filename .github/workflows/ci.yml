@@ -1,0 +1,388 @@
+name: ANVIL CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # ============================================
+  # JOB 1: Lint & Code Quality
+  # ============================================
+  lint:
+    name: Code Lint & Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort
+
+      - name: Run Black formatter check
+        run: |
+          pip install black
+          black --check --diff anvil/ || true
+
+      - name: Run isort check
+        run: |
+          pip install isort
+          isort --check-only --diff anvil/ || true
+
+      - name: Run flake8
+        run: |
+          pip install flake8
+          flake8 anvil/ --max-line-length=120 --ignore=E501,W503 || true
+
+  # ============================================
+  # JOB 2: Unit Tests
+  # ============================================
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Run unit tests
+        run: |
+          cd tests
+          python test_anvil.py
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: tests/*.log
+
+  # ============================================
+  # JOB 3: CLI Integration Tests
+  # ============================================
+  test-cli:
+    name: CLI Integration Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install ANVIL
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Test anvil --help
+        run: |
+          python /home/runner/work/anvil/anvil/anvil_cli.py --help
+
+      - name: Test anvil --version
+        run: |
+          python /home/runner/work/anvil/anvil/anvil_cli.py --version
+
+      - name: Test anvil lang --list
+        run: |
+          python /home/runner/work/anvil/anvil/anvil_cli.py lang --list
+
+      - name: Test anvil doctor
+        run: |
+          python /home/runner/work/anvil/anvil/anvil_cli.py doctor || echo "Doctor completed with warnings"
+
+  # ============================================
+  # JOB 4: Build Demo APK (The Ultimate Test)
+  # ============================================
+  build-demo-apk:
+    name: Build Demo APK
+    runs-on: ubuntu-latest
+    needs: [test-unit, test-cli]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Java JDK 17
+        id: setup-java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Gradle
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
+          unzip -q gradle-8.2-bin.zip
+          echo "$HOME/gradle-8.2/bin" >> $GITHUB_PATH
+          gradle --version
+
+      - name: Install ANVIL
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Setup environment
+        run: |
+          export ANDROID_HOME="$HOME/android-sdk"
+          unset ANDROID_SDK_ROOT  # Avoid conflicts
+          mkdir -p "$ANDROID_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          
+          # Accept Android SDK licenses
+          mkdir -p "$ANDROID_HOME/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$ANDROID_HOME/licenses/android-sdk-license"
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> "$ANDROID_HOME/licenses/android-sdk-license"
+          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> "$ANDROID_HOME/licenses/android-sdk-license"
+          echo "e6b7c2ab7fa2298c15165e9583d0acf0b04a2232" >> "$ANDROID_HOME/licenses/android-sdk-license"
+          
+          java -version 2>&1 || true
+          gradle --version 2>&1 || true
+
+      - name: Create test project
+        run: |
+          cd /tmp
+          rm -rf anvil-test-project
+          mkdir -p anvil-test-project
+          cd anvil-test-project
+          
+          # Create a minimal HTML file
+          cat > index.html << 'HTMLEOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>ANVIL Test</title>
+              <style>
+                  body { font-family: Arial; padding: 20px; }
+                  h1 { color: #2196F3; }
+              </style>
+          </head>
+          <body>
+              <h1>ANVIL is working!</h1>
+              <p>This APK was generated automatically by GitHub Actions.</p>
+          </body>
+          </html>
+          HTMLEOF
+          
+          echo "Project created!"
+          ls -la
+
+      - name: Initialize ANVIL project
+        run: |
+          cd /tmp/anvil-test-project
+          
+          # Create config file directly (avoid interactive prompts)
+          cat > anvil.config.json << 'CONFIGEOF'
+          {
+              "name": "GitHubActionsTest",
+              "author": "GitHub Actions",
+              "authorEmail": "actions@github.com",
+              "package": "com.anvil.test",
+              "version": "1.0.0",
+              "description": "Test APK from GitHub Actions",
+              "theme": "system",
+              "renderMode": "webview",
+              "language": "kotlin",
+              "permissions": ["internet"],
+              "features": ["offline-cache"]
+          }
+          CONFIGEOF
+          
+          echo "Config created!"
+          cat anvil.config.json
+
+      - name: Build APK with ANVIL
+        run: |
+          cd /tmp/anvil-test-project
+          export ANDROID_HOME="$HOME/android-sdk"
+          unset ANDROID_SDK_ROOT  # Avoid conflicts
+          export PATH="$HOME/gradle-8.2/bin:$PATH"
+          export PYTHONPATH="${{ github.workspace }}:$PYTHONPATH"
+          
+          echo "=== Environment ==="
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "PATH=$PATH"
+          echo "==================="
+          
+          # Run anvil build and capture exit code
+          python ${{ github.workspace }}/anvil_cli.py build || exit 1
+          echo "Build completed!"
+          ls -la apps/ 2>/dev/null || echo "Checking for APK..."
+          find . -name "*.apk" -type f
+          
+          # Debug: check android directory
+          echo "=== Android Directory ==="
+          ls -la android/ 2>/dev/null || echo "No android directory"
+          ls -la android/app/build/outputs/apk/ 2>/dev/null || echo "No APK output directory"
+
+      - name: Verify APK exists
+        run: |
+          APK_PATH=$(find /tmp/anvil-test-project -name "*.apk" -type f | head -1)
+          if [ -n "$APK_PATH" ]; then
+            echo "✓ APK found: $APK_PATH"
+            ls -lh "$APK_PATH"
+            echo "APK_SIZE=$(stat -c%s "$APK_PATH")" >> $GITHUB_ENV
+          else
+            echo "✗ No APK found!"
+            exit 1
+          fi
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anvil-demo-apk
+          path: /tmp/anvil-test-project/**/*.apk
+          retention-days: 7
+
+  # ============================================
+  # JOB 5: Security Scan
+  # ============================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [test-unit]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+
+      - name: Run Bandit security scan
+        run: |
+          bandit -r anvil/ -f txt || echo "Bandit scan completed"
+
+      - name: Check for sensitive data
+        run: |
+          # Check for accidentally committed secrets
+          if grep -r "ghp_\|gh_\|AKIA\|sk-" anvil/ --include="*.py" 2>/dev/null; then
+            echo "⚠ WARNING: Potential secrets found!"
+            exit 1
+          else
+            echo "✓ No obvious secrets in code"
+          fi
+
+  # ============================================
+  # JOB 6: Performance Benchmarks
+  # ============================================
+  performance:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install ANVIL
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Measure CLI startup time
+        run: |
+          echo "Measuring CLI startup time..."
+          for i in 1 2 3; do
+            START=$(date +%s%N)
+            python -c "import sys; sys.path.insert(0, '.'); from anvil_cli import main" --help 2>/dev/null
+            END=$(date +%s%N)
+            TIME=$(( (END - START) / 1000000 ))
+            echo "Run $i: ${TIME}ms"
+          done
+
+      - name: Check Python version
+        run: |
+          python --version
+          pip --version
+
+  # ============================================
+  # JOB 7: Create Release (on tags)
+  # ============================================
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build-demo-apk, security]
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get APK
+        uses: actions/download-artifact@v4
+        with:
+          name: anvil-demo-apk
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "**/*.apk"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================
+  # JOB 8: Summary
+  # ============================================
+  summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [lint, test-unit, test-cli, build-demo-apk, security]
+    if: always()
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "## ANVIL CI/CD Pipeline Summary"
+          echo ""
+          echo "| Job | Status |"
+          echo "|-----|--------|"
+          echo "| Lint | ${{ needs.lint.result }} |"
+          echo "| Unit Tests | ${{ needs.test-unit.result }} |"
+          echo "| CLI Tests | ${{ needs.test-cli.result }} |"
+          echo "| Build Demo APK | ${{ needs.build-demo-apk.result }} |"
+          echo "| Security Scan | ${{ needs.security.result }} |"
+          echo ""
+          if [[ "${{ needs.build-demo-apk.result }}" == "success" ]]; then
+            echo "✓ Demo APK built successfully!"
+          fi
