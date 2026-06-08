@@ -180,20 +180,21 @@ jobs:
         run: |
           cd /tmp/anvil-test-project
           
-          # Create config file directly (avoid interactive prompts)
+          # Create config file with source pointing to current directory
           cat > anvil.config.json << 'CONFIGEOF'
           {
-              "name": "GitHubActionsTest",
-              "author": "GitHub Actions",
-              "authorEmail": "actions@github.com",
-              "package": "com.anvil.test",
+              "name": "ANVIL Demo",
+              "author": "ANVIL",
+              "authorEmail": "demo@anvil.dev",
+              "package": "com.anvil.demo",
               "version": "1.0.0",
-              "description": "Test APK from GitHub Actions",
+              "description": "ANVIL Demo App - Transform websites into Android APKs",
               "theme": "system",
               "renderMode": "webview",
               "language": "kotlin",
               "permissions": ["internet"],
-              "features": ["offline-cache"]
+              "features": ["offline-cache"],
+              "source": "."
           }
           CONFIGEOF
           

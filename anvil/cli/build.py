@@ -91,6 +91,9 @@ def run(args):
     anim = SkeletonKingAnimation("Compiling Android project...")
     anim.show(progress=1.0)
     
+    # Pass project_dir to config so copy_web_source knows where to look
+    config['project_dir'] = str(project_dir)
+    
     apk_path = build_apk(project_dir, config, low_memory=args.low_memory)
     
     if apk_path:

@@ -848,9 +848,24 @@ def copy_web_source(assets_dir: Path, config: Dict[str, Any]):
     """Copy web source to assets folder"""
     
     source = config.get("source", "")
+    project_dir = Path(config.get("project_dir", "."))
     
-    if not source:
-        # Create default index.html
+    if not source or source == ".":
+        # Check if there's an index.html in the project root
+        index_path = project_dir / "index.html"
+        if index_path.exists():
+            shutil.copy2(index_path, assets_dir / "index.html")
+            
+            # Copy other root-level files (not directories)
+            for item in project_dir.iterdir():
+                if item.is_file() and item.name not in ['anvil.config.json', 'README.md', '.DS_Store']:
+                    dest = assets_dir / item.name
+                    shutil.copy2(item, dest)
+            
+            print_success("Copied web files from project root")
+            return
+        
+        # Create default index.html if none exists
         index_html = """<!DOCTYPE html>
 <html>
 <head>
